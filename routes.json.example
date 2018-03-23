@@ -1,0 +1,3 @@
+{
+  "^/users*|/register|/login": "http://localhost:8080"
+}

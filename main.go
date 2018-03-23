@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -37,6 +38,7 @@ func transfer(destination io.WriteCloser, source io.ReadCloser) {
 }
 
 func handleHTTP(w http.ResponseWriter, req *http.Request) {
+	fmt.Println("came")
 	resp, err := http.DefaultTransport.RoundTrip(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
@@ -62,7 +64,7 @@ func main() {
 	var keyPath string
 	flag.StringVar(&keyPath, "key", "server.key", "path to key file")
 	var proto string
-	flag.StringVar(&proto, "proto", "https", "Proxy protocol (http or https)")
+	flag.StringVar(&proto, "proto", "http", "Proxy protocol (http or https)")
 	flag.Parse()
 
 	if proto != "http" && proto != "https" {
@@ -83,6 +85,7 @@ func main() {
 	}
 
 	if proto == "http" {
+		fmt.Println("Start listening on :8888")
 		log.Fatal(server.ListenAndServe())
 	} else {
 		log.Fatal(server.ListenAndServeTLS(pemPath, keyPath))
