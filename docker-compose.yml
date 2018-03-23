@@ -1,0 +1,19 @@
+version: "3"
+
+networks:
+  ethernet:
+    external: true
+
+services:
+  gl-proxy:
+    container_name: gl-proxy
+    image: gl-proxy
+    build:
+      context: .
+      dockerfile: .docker/golang/Dockerfile
+    env_file:
+      - ./.docker/golang/.env
+    ports:
+      - "8888:8888"
+    networks:
+      - ethernet
