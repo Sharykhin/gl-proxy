@@ -19,8 +19,8 @@ type Proxy struct {
 // currently it accepts the following map: path -> server
 // Example:
 // map[string]string{
-//  "users": "http://127.0.0.1:8080",
-//  "maps" : "http://127.0.0.1:8081",
+//  "^/users*|/register|/login": "http://127.0.0.1:8080",
+//  "^/maps*" : "http://127.0.0.1:8081",
 // }
 func NewProxy(servers map[string]string) *Proxy {
 	route := make(map[*regexp.Regexp]*httputil.ReverseProxy)
