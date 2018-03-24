@@ -2,7 +2,6 @@ package proxy
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -24,21 +23,21 @@ type (
 //  "^/users*|/register|/login": "http://127.0.0.1:8080",
 //  "^/maps*" : "http://127.0.0.1:8081",
 // }
-func NewProxy(servers map[string]string) *Proxy {
+func NewProxy(servers map[string]string) (*Proxy, error) {
 	routes := make(map[*regexp.Regexp]*httputil.ReverseProxy)
 
 	for pattern, target := range servers {
-		targetUrl, err := url.Parse(target)
+		targetURL, err := url.ParseRequestURI(target)
 		if err != nil {
-			log.Fatalf("Could not parse a provided url %s: %v\n", target, err)
+			return nil, fmt.Errorf("could not parse a provided url %s: %v", target, err)
 		}
 		c, err := regexp.Compile(pattern)
 		if err != nil {
-			log.Fatalf("Could not compile a regular expression %s: %v\n", pattern, err)
+			return nil, fmt.Errorf("could not compile a regular expression %s: %v", pattern, err)
 		}
-		routes[c] = httputil.NewSingleHostReverseProxy(targetUrl)
+		routes[c] = httputil.NewSingleHostReverseProxy(targetURL)
 	}
-	return &Proxy{routes: routes}
+	return &Proxy{routes: routes}, nil
 }
 
 func (p *Proxy) parseRequest(r *http.Request) *httputil.ReverseProxy {
@@ -55,6 +54,7 @@ func (p *Proxy) parseRequest(r *http.Request) *httputil.ReverseProxy {
 // It fills it up with some additional headers and pass to a target server
 func (p *Proxy) Handle(w http.ResponseWriter, r *http.Request) {
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("X-GoProxy", "GoProxy")
 	w.Header().Set("X-Forwarded-Proto", "http")
 	w.Header().Set("X-Real-IP", r.RemoteAddr)
@@ -63,7 +63,6 @@ func (p *Proxy) Handle(w http.ResponseWriter, r *http.Request) {
 	if proxyServer := p.parseRequest(r); proxyServer != nil {
 		proxyServer.ServeHTTP(w, r)
 	} else {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Route not found"))
+		http.Error(w, "Route not found", http.StatusNotFound)
 	}
 }

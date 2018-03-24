@@ -8,8 +8,8 @@ RUN go get .
 
 RUN go install github.com/Sharykhin/gl-proxy
 
-#ENTRYPOINT /go/bin/gl-proxy
+ENTRYPOINT /go/bin/gl-proxy
 
-CMD tail -f /dev/null
+#CMD tail -f /dev/null
 
 EXPOSE 8888

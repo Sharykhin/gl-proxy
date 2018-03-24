@@ -17,21 +17,27 @@ var (
 )
 
 const (
-	ROUTE_FILE = "routes.json"
+	routeFile = "routes.json"
 )
 
 func init() {
-	raw, err := ioutil.ReadFile(ROUTE_FILE)
+	raw, err := ioutil.ReadFile(routeFile)
 	if err != nil {
-		log.Fatalf("Could not read %s file: %v\n", ROUTE_FILE, err)
+		log.Fatalf("Could not read %s file: %v\n", routeFile, err)
 	}
-	json.Unmarshal(raw, &routes)
+	err = json.Unmarshal(raw, &routes)
+	if err != nil {
+		log.Fatalf("Could not parse json %s file: %v\n", routeFile, err)
+	}
 	address = os.Getenv("HTTP_ADDRESS")
 }
 
 // Run starts listening and servers all income requests
 func Run() error {
-	p := proxy.NewProxy(routes)
+	p, err := proxy.NewProxy(routes)
+	if err != nil {
+		return err
+	}
 	server := &http.Server{
 		Addr:    address,
 		Handler: http.HandlerFunc(p.Handle),
