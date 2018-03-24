@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"regexp"
 )
 
@@ -15,6 +16,14 @@ type (
 		routes map[*regexp.Regexp]*httputil.ReverseProxy
 	}
 )
+
+var (
+	corsOrigin string
+)
+
+func init() {
+	corsOrigin = os.Getenv("CORS_ORIGIN")
+}
 
 // NewProxy returns a new proxy with registered path and appropriate destinations
 // currently it accepts the following map: path -> server
@@ -54,7 +63,7 @@ func (p *Proxy) parseRequest(r *http.Request) *httputil.ReverseProxy {
 // It fills it up with some additional headers and pass to a target server
 func (p *Proxy) Handle(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", corsOrigin)
 	w.Header().Set("X-GoProxy", "GoProxy")
 	w.Header().Set("X-Forwarded-Proto", "http")
 	w.Header().Set("X-Real-IP", r.RemoteAddr)
