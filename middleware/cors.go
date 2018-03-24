@@ -20,6 +20,5 @@ func CORS(h http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", corsOrigin)
 
 		h.ServeHTTP(w, r)
-		return
 	})
 }
