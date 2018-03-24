@@ -11,6 +11,8 @@ services:
     build:
       context: .
       dockerfile: .docker/golang/Dockerfile
+    volumes:
+      - .:/go/src/github.com/Sharykhin/gl-proxy
     env_file:
       - ./.docker/golang/.env
     ports:

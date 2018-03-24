@@ -1,3 +1,4 @@
 {
-  "^/users*|/register|/login": "http://localhost:8080"
+  "^/users*|/register|/login": "http://gl-auth-nginx",
+  "^/failed-mails": "http://gl-mail-api-golang:8002"
 }
