@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Sharykhin/gl-proxy/middleware"
 	"github.com/Sharykhin/gl-proxy/proxy"
 )
 
@@ -40,7 +41,7 @@ func Run() error {
 	}
 	server := &http.Server{
 		Addr:    address,
-		Handler: http.HandlerFunc(p.Handle),
+		Handler: middleware.Chan(http.HandlerFunc(p.Handle), middleware.CORS),
 	}
 
 	fmt.Printf("Started listening on port %s\n", address)
