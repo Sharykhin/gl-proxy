@@ -62,8 +62,12 @@ func (p *Proxy) parseRequest(r *http.Request) *httputil.ReverseProxy {
 // Handle handles all income requests.
 // It fills it up with some additional headers and pass to a target server
 func (p *Proxy) Handle(w http.ResponseWriter, r *http.Request) {
-
+	if r.Method == "OPTIONS" {
+		return
+	}
 	w.Header().Set("Access-Control-Allow-Origin", corsOrigin)
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+
 	w.Header().Set("X-GoProxy", "GoProxy")
 	w.Header().Set("X-Forwarded-Proto", "http")
 	w.Header().Set("X-Real-IP", r.RemoteAddr)
