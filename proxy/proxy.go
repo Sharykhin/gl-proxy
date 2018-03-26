@@ -42,8 +42,8 @@ func NewProxy(servers map[string]string) (*Proxy, error) {
 
 func (p *Proxy) parseRequest(r *http.Request) *httputil.ReverseProxy {
 	for regExpCompile, proxyServer := range p.routes {
-		fmt.Println(r.URL.Path, regExpCompile.String())
 		if regExpCompile.MatchString(r.URL.Path) {
+			fmt.Println("matched", r.URL.Path, regExpCompile.String())
 			return proxyServer
 		}
 	}

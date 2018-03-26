@@ -1,4 +1,6 @@
 {
   "^/users*|/register|/login": "http://gl-auth-nginx",
-  "^/failed-mails": "http://gl-mail-api-golang:8002"
+  "^/failed-mails": "http://gl-mail-api-golang:8002",
+  "^/upload/*": "http://gl-static-api-varnish",
+  "^/images/*": "http://gl-static-api-varnish"
 }
